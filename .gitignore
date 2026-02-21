@@ -17,6 +17,9 @@ coverage.*
 *.coverprofile
 profile.cov
 
+#builded binary name
+internship_tasks
+
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
