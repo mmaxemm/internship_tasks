@@ -6,7 +6,7 @@ import (
 	"github.com/mmaxemm/internship_tasks/structures"
 )
 
-var tests = []struct {
+var palindromeTests = []struct {
 	name string // description of this test case
 	// Named input parameters for target function.
 	str  string
@@ -23,7 +23,7 @@ var tests = []struct {
 }
 
 func TestIsPalindrome1(t *testing.T) {
-	for _, tt := range tests {
+	for _, tt := range palindromeTests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := structures.IsPalindrome1(tt.str)
 			if got != tt.want {
@@ -35,7 +35,7 @@ func TestIsPalindrome1(t *testing.T) {
 
 
 func TestIsPalindrome2(t *testing.T) {
-	for _, tt := range tests {
+	for _, tt := range palindromeTests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := structures.IsPalindrome2(tt.str)
 			if got != tt.want {
@@ -47,7 +47,7 @@ func TestIsPalindrome2(t *testing.T) {
 
 
 func TestIsPalindrome3(t *testing.T) {
-	for _, tt := range tests {
+	for _, tt := range palindromeTests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := structures.IsPalindrome3(tt.str)
 			// TODO: update the condition below to compare got with tt.want.
