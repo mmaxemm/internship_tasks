@@ -16,6 +16,11 @@ var reverseTests = []struct {
 	{"1 char", "a", "a"},
 	{"even number of chars", "123456", "654321"},
 	{"odd number of chars", "12345", "54321"},
+	{">1 words", "hello world", "olleh dlrow"},
+	{"all spaces", "    ",  "    "},
+	{"spaces at start", "   some words", "   emos sdrow"},
+	{"spaces at the end", "some words   ", "emos sdrow   "},
+	{"tab instead of space", "some	words", "emos	sdrow"},
 }
 
 func TestReverse1(t *testing.T) {
