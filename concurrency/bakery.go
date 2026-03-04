@@ -1,11 +1,14 @@
 package concurrency
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -46,6 +49,10 @@ func StartBakery(N, M, K int) {
 	
 	var bakersWG sync.WaitGroup
 	
+	ctx, stop := signal.NotifyContext(context.Background(),
+		syscall.SIGINT, syscall.SIGTERM)
+    defer stop()
+
 	bakersWG.Add(N)
 	for i := range N {
 		go func(bakerID int) {
@@ -57,6 +64,11 @@ func StartBakery(N, M, K int) {
 				distributedCakes = K/N
 			}
 			for range distributedCakes {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
 				variance := rand.Intn(2*t1+1) - t1
 				bakeTime := max(bakerID + variance, 5)
 
@@ -66,7 +78,11 @@ func StartBakery(N, M, K int) {
 					BakedBy:   bakerID,
 					BakedTime: bakeTime,
 				}
-				bakedCakes <- cake
+				select {
+				case bakedCakes <- cake:
+				case <-ctx.Done():
+					return
+				}
 			}
 		}(i)
 	}
@@ -82,14 +98,17 @@ func StartBakery(N, M, K int) {
 		go func(packerID int) {
 			defer packersWG.Done()
 			for cake := range bakedCakes {
-				variance := rand.Intn(2*t2+1) - t2
-				packTime := max(packerID + variance, 5)
-				
-				time.Sleep(time.Duration(packTime) * time.Millisecond)
-				
-				cake.PackedBy = packerID
-				cake.PackedTime = packTime
-				packedCakes <- cake
+				select {
+				case <-ctx.Done():
+					return
+				case packedCakes <- cake:
+				default:
+					variance := rand.Intn(2*t2+1) - t2
+					packTime := max(packerID + variance, 5)
+					time.Sleep(time.Duration(packTime) * time.Millisecond)
+					cake.PackedBy = packerID
+					cake.PackedTime = packTime
+				}
 			}
 		}(i)
 	}
